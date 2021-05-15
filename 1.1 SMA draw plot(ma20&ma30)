@@ -1,0 +1,76 @@
+# -*- coding:utf-8 -*-
+"""
+作者：Lansher
+日期：2021年05月15日
+"""
+import matplotlib.pyplot as plt
+import ccxt
+import talib
+import numpy
+import time
+import matplotlib.pyplot as mpl
+#global kline
+
+class myStrategy:
+	def __init__(self):
+		self.exchange=ccxt.huobipro({
+			'apiKey': '6612b47c-e27f20fd-fr2wer5t6y-fc635',
+			'secret': '53fd80e1-5e9b8fe9-81cf58d8-153e7',
+			'password': '',
+			'timeout': 3000,
+			'enableRateLimit': True})
+		self.hold_amount = 0
+	def get_timeStamp(self):
+		'''''''''''	
+		used to get timeStamp
+		'''''''''''
+		timestamp =time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+		return timestamp
+	def ma(self,length,kline):
+		''''''''''
+		Used to calculate MA(Moving Average)
+		'''''''''''
+		global close_list
+		close_list=[]
+		for item in kline:
+			close_list.append(item[4])
+		close_array=numpy.array(close_list)
+		result=talib.SMA(close_array,length)
+		return result#result is array type
+
+	def trade(self):
+		global kline,ma20,ma30
+		kline=self.exchange.fetchOHLCV(symbol="DOGE/USDT", timeframe="1h")
+		ma20=self.ma(20,kline)
+		ma30=self.ma(30,kline)
+		#print(ma20,type(ma20))
+	def plot(self):
+		#global ma20,ma30
+		#time=my_strategy.get_timeStamp()
+		time_list = []
+		'''''''''''
+		  Do no use :" ma20 = ma20.tolist()",because ma20 is a global variable, "ma20=" means ma20's
+	value will be change .
+		'''''''''''''''''
+		ma20_list=ma20.tolist()
+		ma30_list=ma30.tolist()
+		for item in kline:
+			#item[0] = time.strftime("%Y-%m-%d %H:%M:%S", item[0])
+			time_list.append(item[0])
+			#time_list = time.strftime("%Y-%m-%d %H:%M:%S",time_list())
+		#print(time_list,type(time_list))
+		#print(close_list,type(close_list))
+		axs=plt.subplot()
+		'''''''''''
+		Different from "subplot" to "Subplot"?
+		'''''''''''
+		axs.plot(time_list, ma20_list, label='MA20')
+		axs.plot(time_list, ma30_list, label='MA30')
+		axs.legend()#Used to show label
+		mpl.show()
+
+if __name__=='__main__':
+	my_strategy=myStrategy()
+	my_strategy.trade()
+	#print(my_strategy.ma(30,kline))
+	my_strategy.plot()
