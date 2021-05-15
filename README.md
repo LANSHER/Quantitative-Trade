@@ -1,2 +1,2 @@
 # Quantitative-Trade
-my learning quant trade steping with python 
+my learning quant trade steps use python 
